@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type, Schema } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { ResumeData } from "../types";
 
 // Initialize Gemini Client
@@ -15,7 +15,7 @@ interface GenerateResumeInput {
  */
 export const generateResume = async (input: GenerateResumeInput): Promise<ResumeData> => {
   // Define the strict schema for the resume data
-  const resumeSchema: Schema = {
+  const resumeSchema = {
     type: Type.OBJECT,
     properties: {
       fullName: { type: Type.STRING },
