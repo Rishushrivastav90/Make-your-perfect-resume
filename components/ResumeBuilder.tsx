@@ -282,32 +282,50 @@ export const ResumeBuilder: React.FC = () => {
              <select 
                 value={template} 
                 onChange={(e) => setTemplate(e.target.value as TemplateType)}
-                className="p-2 text-sm border border-slate-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+                className="p-2 text-sm border border-slate-300 rounded-md bg-white focus:ring-2 focus:ring-blue-500 outline-none max-w-[200px]"
              >
-               <option value="compact">Compact (One Page)</option>
-               <option value="professional">Professional (New)</option>
-               <option value="visual">Visual (Timeline)</option>
-               <option value="global">Global (Corporate)</option>
-               <option value="modern">Modern (Visual)</option>
-               <option value="classic">Classic (ATS)</option>
-               <option value="minimalist">Minimalist</option>
-               <option value="executive">Executive</option>
-               <option value="swiss">Swiss (Bold)</option>
-               <option value="elegant">Elegant (Serif)</option>
+               <optgroup label="Popular">
+                 <option value="compact">Compact (One Page)</option>
+                 <option value="professional">Professional</option>
+                 <option value="modern">Modern Visual</option>
+                 <option value="classic">Classic ATS</option>
+               </optgroup>
+               <optgroup label="Styled">
+                 <option value="creative">Creative (Purple)</option>
+                 <option value="tech">Tech (Dark/Green)</option>
+                 <option value="startup">Startup (Orange)</option>
+                 <option value="visual">Visual Timeline</option>
+                 <option value="metro">Metro Blocks</option>
+               </optgroup>
+               <optgroup label="Minimal">
+                 <option value="swiss">Swiss Bold</option>
+                 <option value="minimalist">Minimalist</option>
+                 <option value="global">Global Corporate</option>
+                 <option value="executive">Executive</option>
+                 <option value="academic">Academic / CV</option>
+               </optgroup>
+               <optgroup label="Themed">
+                 <option value="elegant">Elegant Serif</option>
+                 <option value="sky">Sky Blue</option>
+                 <option value="verde">Verde Green</option>
+                 <option value="navy">Navy Blue</option>
+                 <option value="artistic">Artistic Soft</option>
+                 <option value="infographic">Infographic</option>
+               </optgroup>
              </select>
           </div>
         </div>
 
         {/* Manage Sections Toggle Area (Compact View) */}
         <div className="px-6 py-3 border-b border-slate-100 bg-slate-50 flex gap-2 overflow-x-auto no-scrollbar">
-            <div className="flex items-center gap-2 text-xs text-slate-500 font-bold uppercase mr-2">
+            <div className="flex items-center gap-2 text-xs text-slate-500 font-bold uppercase mr-2 flex-shrink-0">
                 <Settings2 size={14} /> Sections:
             </div>
             {Object.keys(sectionVisibility).map(key => (
                 <button
                     key={key}
                     onClick={() => toggleVisibility(key)}
-                    className={`px-2 py-1 rounded text-xs font-medium border transition flex items-center gap-1
+                    className={`px-2 py-1 rounded text-xs font-medium border transition flex items-center gap-1 flex-shrink-0
                         ${sectionVisibility[key] ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-white border-slate-200 text-slate-400'}`}
                 >
                     {key.charAt(0).toUpperCase() + key.slice(1)}

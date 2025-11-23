@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ResumeData, TemplateType, CustomSection } from '../types';
-import { Mail, Phone, MapPin, Linkedin, Globe, Briefcase, GraduationCap, Code, Award, User, Languages as LangIcon, Star, FileText, Calendar, Circle, ExternalLink } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Globe, Briefcase, GraduationCap, Code, Award, User, Languages as LangIcon, Star, FileText, Calendar, Circle, ExternalLink, Zap, Target, BookOpen } from 'lucide-react';
 
 interface ResumeTemplateProps {
   data: ResumeData;
@@ -28,8 +28,650 @@ export const ResumeTemplate: React.FC<ResumeTemplateProps> = ({ data, template, 
      return section.items.length > 0;
   };
 
+  // Helper function for custom sections
+  const renderCustomSections = (data: ResumeData, visibleSections: Record<string, boolean> | undefined, isCustomVisible: (s: CustomSection) => boolean) => {
+    if (!data.customSections) return null;
+    return data.customSections.map((section) => {
+       if (!isCustomVisible(section)) return null;
+       return (
+        <section key={section.id} className="mb-4">
+           <h2 className="text-lg font-bold uppercase tracking-wider mb-2 border-b border-slate-200 pb-1 flex items-center gap-2">
+             {section.title}
+           </h2>
+           <div className="space-y-4">
+              {section.items.map((item, idx) => (
+                 <div key={idx}>
+                    <div className="flex justify-between items-baseline mb-1">
+                       <span className="font-bold text-base text-slate-800">{item.title}</span>
+                       {item.date && <span className="text-xs italic text-slate-500">{item.date}</span>}
+                    </div>
+                    {item.subtitle && <div className="text-sm font-medium text-slate-600 mb-1">{item.subtitle}</div>}
+                    <ul className="list-disc ml-5 space-y-1">
+                       {item.description.map((desc, i) => (
+                          <li key={i} className="text-sm text-slate-700">{desc}</li>
+                       ))}
+                    </ul>
+                 </div>
+              ))}
+           </div>
+        </section>
+       );
+    });
+  };
+
   // Common A4 Container Class
   const containerClass = "w-full min-h-[297mm] bg-white text-slate-900 shadow-sm printable-content font-sans relative overflow-hidden";
+
+  // --- 1. Creative Template (Bold Purple) ---
+  if (template === 'creative') {
+    return (
+      <div className={`${containerClass} flex text-slate-800`} id="resume-preview">
+         <div className="w-1/3 bg-purple-900 text-white p-6 flex flex-col gap-6">
+            <div className="text-center">
+               <div className="w-24 h-24 bg-white/20 rounded-full mx-auto mb-4 flex items-center justify-center text-3xl font-bold border-2 border-white/50">
+                  {data.fullName.charAt(0)}
+               </div>
+               <h1 className="text-2xl font-bold uppercase leading-none mb-1">{data.fullName}</h1>
+               <p className="text-purple-200 text-sm font-medium">{data.jobTitle}</p>
+            </div>
+            
+            <div className="space-y-3 text-sm text-purple-100">
+               <div className="flex items-center gap-2"><Mail size={14} /> <span className="text-xs break-all">{data.contact.email}</span></div>
+               <div className="flex items-center gap-2"><Phone size={14} /> <span className="text-xs">{data.contact.phone}</span></div>
+               <div className="flex items-center gap-2"><MapPin size={14} /> <span className="text-xs">{data.contact.location}</span></div>
+            </div>
+
+            {isVisible('skills') && (
+               <div className="mt-4">
+                  <h3 className="text-white font-bold uppercase border-b border-purple-700 pb-1 mb-3">Skills</h3>
+                  <div className="flex flex-wrap gap-2">
+                     {data.skills.flatMap(g => g.items).map((skill, i) => (
+                        <span key={i} className="bg-purple-800 text-xs px-2 py-1 rounded-full border border-purple-700">{skill}</span>
+                     ))}
+                  </div>
+               </div>
+            )}
+             {isVisible('education') && (
+               <div className="mt-2">
+                  <h3 className="text-white font-bold uppercase border-b border-purple-700 pb-1 mb-3">Education</h3>
+                  {data.education.map((edu, i) => (
+                     <div key={i} className="mb-2">
+                        <div className="font-bold text-sm">{edu.institution}</div>
+                        <div className="text-xs text-purple-200">{edu.degree}</div>
+                        <div className="text-xs text-purple-300">{edu.year}</div>
+                     </div>
+                  ))}
+               </div>
+            )}
+         </div>
+
+         <div className="w-2/3 p-8">
+            {isVisible('summary') && (
+               <div className="mb-6 p-4 bg-purple-50 rounded-lg border-l-4 border-purple-600">
+                  <h2 className="text-lg font-bold text-purple-900 mb-2">Profile</h2>
+                  <p className="text-sm text-slate-700 leading-relaxed">{data.summary}</p>
+               </div>
+            )}
+
+            {isVisible('experience') && (
+               <div className="mb-6">
+                  <h2 className="text-xl font-bold text-purple-900 mb-4 border-b-2 border-purple-100 pb-1">Experience</h2>
+                  <div className="space-y-6">
+                     {data.experience.map((exp, i) => (
+                        <div key={i}>
+                           <div className="flex justify-between items-baseline">
+                              <h3 className="font-bold text-lg text-slate-800">{exp.role}</h3>
+                              <span className="text-xs font-bold bg-purple-100 text-purple-800 px-2 py-0.5 rounded">{exp.startDate} - {exp.endDate}</span>
+                           </div>
+                           <p className="text-sm font-semibold text-purple-600 mb-2">{exp.company}</p>
+                           <ul className="list-disc ml-5 space-y-1">
+                              {exp.description.map((d, idx) => (
+                                 <li key={idx} className="text-sm text-slate-600 leading-snug">{d}</li>
+                              ))}
+                           </ul>
+                        </div>
+                     ))}
+                  </div>
+               </div>
+            )}
+
+            {isVisible('projects') && (
+               <div className="mb-6">
+                  <h2 className="text-xl font-bold text-purple-900 mb-4 border-b-2 border-purple-100 pb-1">Projects</h2>
+                  <div className="grid grid-cols-1 gap-4">
+                     {data.projects.map((proj, i) => (
+                        <div key={i} className="border border-purple-100 p-3 rounded-lg">
+                           <h3 className="font-bold text-slate-800">{proj.name}</h3>
+                           <p className="text-xs font-mono text-purple-500 mb-2">{proj.technologies}</p>
+                           <ul className="list-disc ml-5 space-y-1">
+                              {proj.description.map((d, idx) => (
+                                 <li key={idx} className="text-sm text-slate-600 leading-tight">{d}</li>
+                              ))}
+                           </ul>
+                        </div>
+                     ))}
+                  </div>
+               </div>
+            )}
+            {renderCustomSections(data, visibleSections, isCustomVisible)}
+         </div>
+      </div>
+    );
+  }
+
+  // --- 2. Tech Template (Dark Header, Green Accents, Monospace) ---
+  if (template === 'tech') {
+    return (
+      <div className={`${containerClass} p-8 font-mono text-slate-800`} id="resume-preview">
+         <header className="bg-slate-900 text-green-400 p-6 -mx-8 -mt-8 mb-8 border-b-4 border-green-500">
+            <h1 className="text-4xl font-bold mb-1 tracking-tighter">{`> ${data.fullName}_`}</h1>
+            <p className="text-slate-300 text-lg mb-4">{`// ${data.jobTitle}`}</p>
+            <div className="flex flex-wrap gap-4 text-xs text-slate-400 font-sans">
+               <span>[{data.contact.email}]</span>
+               <span>[{data.contact.phone}]</span>
+               <span>[{data.contact.location}]</span>
+            </div>
+         </header>
+         
+         <div className="grid grid-cols-12 gap-8">
+            <div className="col-span-8">
+               {isVisible('experience') && (
+                  <section className="mb-8">
+                     <h2 className="text-lg font-bold text-slate-900 bg-slate-100 inline-block px-2 py-1 mb-4 border-l-4 border-green-500">EXPERIENCE.LOG</h2>
+                     <div className="space-y-6">
+                        {data.experience.map((exp, i) => (
+                           <div key={i} className="relative pl-4 border-l border-slate-300">
+                              <div className="flex justify-between items-baseline mb-1">
+                                 <h3 className="font-bold text-base">{exp.role}</h3>
+                                 <span className="text-xs bg-slate-200 px-1">{exp.startDate} - {exp.endDate}</span>
+                              </div>
+                              <div className="text-green-600 font-bold text-xs mb-2">@ {exp.company}</div>
+                              <ul className="space-y-1">
+                                 {exp.description.map((d, idx) => (
+                                    <li key={idx} className="text-xs flex gap-2">
+                                       <span className="text-green-500">{'>'}</span> {d}
+                                    </li>
+                                 ))}
+                              </ul>
+                           </div>
+                        ))}
+                     </div>
+                  </section>
+               )}
+                {isVisible('projects') && (
+                  <section className="mb-8">
+                     <h2 className="text-lg font-bold text-slate-900 bg-slate-100 inline-block px-2 py-1 mb-4 border-l-4 border-green-500">PROJECTS.EXE</h2>
+                     {data.projects.map((proj, i) => (
+                        <div key={i} className="mb-4">
+                           <div className="font-bold">{proj.name}</div>
+                           <div className="text-[10px] text-slate-500 mb-1">{`{ ${proj.technologies} }`}</div>
+                           <p className="text-xs text-slate-600">{proj.description[0]}</p>
+                        </div>
+                     ))}
+                  </section>
+               )}
+            </div>
+
+            <div className="col-span-4">
+               {isVisible('skills') && (
+                  <section className="mb-8">
+                     <h2 className="text-lg font-bold text-slate-900 bg-slate-100 inline-block px-2 py-1 mb-4 border-l-4 border-green-500">SKILLS.JSON</h2>
+                     <div className="text-xs space-y-3">
+                        {data.skills.map((g, i) => (
+                           <div key={i}>
+                              <div className="font-bold text-green-700 mb-1">{g.category}:</div>
+                              <div className="leading-relaxed">{`[ "${g.items.join('", "')}" ]`}</div>
+                           </div>
+                        ))}
+                     </div>
+                  </section>
+               )}
+               {isVisible('education') && (
+                  <section>
+                      <h2 className="text-lg font-bold text-slate-900 bg-slate-100 inline-block px-2 py-1 mb-4 border-l-4 border-green-500">EDUCATION</h2>
+                      {data.education.map((edu, i) => (
+                         <div key={i} className="mb-3 text-xs">
+                            <div className="font-bold">{edu.institution}</div>
+                            <div>{edu.degree}</div>
+                            <div className="text-slate-500">{edu.year}</div>
+                         </div>
+                      ))}
+                  </section>
+               )}
+            </div>
+         </div>
+         {renderCustomSections(data, visibleSections, isCustomVisible)}
+      </div>
+    );
+  }
+
+  // --- 3. Infographic Template (Center Header, Icons, Grid) ---
+  if (template === 'infographic') {
+     return (
+        <div className={`${containerClass} p-8 bg-slate-50`} id="resume-preview">
+           <div className="bg-white shadow-lg p-8 rounded-2xl min-h-[280mm]">
+              <header className="text-center border-b-2 border-dashed border-slate-200 pb-6 mb-8">
+                 <h1 className="text-3xl font-extrabold text-slate-800 uppercase tracking-widest">{data.fullName}</h1>
+                 <p className="text-blue-500 font-bold mt-2">{data.jobTitle}</p>
+                 <div className="flex justify-center gap-4 mt-4 text-xs text-slate-500">
+                    <span className="flex items-center gap-1"><Mail size={12}/> {data.contact.email}</span>
+                    <span className="flex items-center gap-1"><Phone size={12}/> {data.contact.phone}</span>
+                    <span className="flex items-center gap-1"><MapPin size={12}/> {data.contact.location}</span>
+                 </div>
+              </header>
+
+              <div className="grid grid-cols-2 gap-8">
+                 <div>
+                    {isVisible('experience') && (
+                       <section className="mb-6">
+                          <h2 className="text-center font-bold text-slate-800 uppercase mb-4 flex items-center justify-center gap-2"><Briefcase size={16} /> Experience</h2>
+                          {data.experience.map((exp, i) => (
+                             <div key={i} className="mb-4 bg-slate-50 p-3 rounded-lg">
+                                <div className="text-sm font-bold text-blue-600">{exp.company}</div>
+                                <div className="text-xs font-bold text-slate-700">{exp.role}</div>
+                                <div className="text-[10px] text-slate-400 mb-2">{exp.startDate} - {exp.endDate}</div>
+                                <ul className="list-disc ml-4 text-[11px] text-slate-600">
+                                   {exp.description.map((d, idx) => <li key={idx}>{d}</li>)}
+                                </ul>
+                             </div>
+                          ))}
+                       </section>
+                    )}
+                 </div>
+                 <div>
+                    {isVisible('skills') && (
+                       <section className="mb-6">
+                          <h2 className="text-center font-bold text-slate-800 uppercase mb-4 flex items-center justify-center gap-2"><Zap size={16} /> Skills</h2>
+                          <div className="space-y-3">
+                             {data.skills.map((g, i) => (
+                                <div key={i}>
+                                   <div className="text-xs font-bold text-center mb-1">{g.category}</div>
+                                   <div className="flex flex-wrap justify-center gap-1.5">
+                                      {g.items.map((skill, idx) => (
+                                         <span key={idx} className="bg-blue-100 text-blue-700 text-[10px] px-2 py-0.5 rounded-full">{skill}</span>
+                                      ))}
+                                   </div>
+                                </div>
+                             ))}
+                          </div>
+                       </section>
+                    )}
+                     {isVisible('education') && (
+                       <section className="mb-6">
+                           <h2 className="text-center font-bold text-slate-800 uppercase mb-4 flex items-center justify-center gap-2"><GraduationCap size={16} /> Education</h2>
+                           {data.education.map((edu, i) => (
+                              <div key={i} className="text-center mb-2">
+                                 <div className="text-sm font-bold">{edu.institution}</div>
+                                 <div className="text-xs">{edu.degree}</div>
+                                 <div className="text-[10px] text-slate-500">{edu.year}</div>
+                              </div>
+                           ))}
+                       </section>
+                    )}
+                 </div>
+              </div>
+              <div className="mt-4">
+                 {isVisible('summary') && <p className="text-center text-sm text-slate-600 italic px-8">"{data.summary}"</p>}
+              </div>
+              {renderCustomSections(data, visibleSections, isCustomVisible)}
+           </div>
+        </div>
+     )
+  }
+
+  // --- 4. Startup Template (Orange, Modern) ---
+  if (template === 'startup') {
+     return (
+        <div className={`${containerClass} p-10`} id="resume-preview">
+           <div className="flex items-center gap-6 mb-8 border-b-2 border-orange-500 pb-6">
+              <div className="flex-1">
+                 <h1 className="text-5xl font-black text-slate-900 tracking-tighter">{data.fullName}</h1>
+                 <p className="text-xl font-medium text-orange-600 mt-1">{data.jobTitle}</p>
+              </div>
+              <div className="text-right text-sm space-y-1 text-slate-600">
+                 <div>{data.contact.email}</div>
+                 <div>{data.contact.phone}</div>
+                 <div>{data.contact.location}</div>
+              </div>
+           </div>
+
+           <div className="grid grid-cols-3 gap-8">
+              <div className="col-span-2 space-y-8">
+                 {isVisible('experience') && (
+                    <section>
+                       <h2 className="text-2xl font-bold text-slate-800 mb-4 flex items-center gap-2"><span className="w-2 h-8 bg-orange-500 rounded"></span> Work History</h2>
+                       <div className="space-y-6">
+                          {data.experience.map((exp, i) => (
+                             <div key={i}>
+                                <div className="flex justify-between items-center mb-1">
+                                   <h3 className="font-bold text-lg">{exp.role}</h3>
+                                   <span className="text-sm font-bold text-orange-500">{exp.startDate} - {exp.endDate}</span>
+                                </div>
+                                <div className="text-slate-500 font-medium mb-2">{exp.company}</div>
+                                <ul className="list-disc ml-5 space-y-1 text-sm text-slate-600">
+                                   {exp.description.map((d, idx) => <li key={idx}>{d}</li>)}
+                                </ul>
+                             </div>
+                          ))}
+                       </div>
+                    </section>
+                 )}
+                 {renderCustomSections(data, visibleSections, isCustomVisible)}
+              </div>
+              <div className="col-span-1 space-y-8">
+                 {isVisible('summary') && (
+                    <section className="bg-orange-50 p-4 rounded-xl">
+                       <h3 className="font-bold text-orange-800 mb-2">About Me</h3>
+                       <p className="text-sm text-orange-900 leading-relaxed">{data.summary}</p>
+                    </section>
+                 )}
+                 {isVisible('skills') && (
+                    <section>
+                       <h3 className="font-bold text-slate-800 mb-3 text-lg">Expertise</h3>
+                       <div className="space-y-3">
+                          {data.skills.map((g, i) => (
+                             <div key={i}>
+                                <div className="text-xs font-bold text-slate-400 uppercase mb-1">{g.category}</div>
+                                <div className="flex flex-wrap gap-2">
+                                   {g.items.map((s, idx) => <span key={idx} className="bg-slate-100 px-2 py-1 rounded text-sm font-medium">{s}</span>)}
+                                </div>
+                             </div>
+                          ))}
+                       </div>
+                    </section>
+                 )}
+              </div>
+           </div>
+        </div>
+     )
+  }
+
+  // --- 5. Artistic Template (Soft Background, Serif) ---
+  if (template === 'artistic') {
+     return (
+        <div className={`${containerClass} p-10 bg-[#fdfbf7] text-stone-800`} id="resume-preview">
+           <div className="border-4 border-stone-800 p-8 min-h-[270mm] h-full relative">
+              <header className="text-center mb-12">
+                 <h1 className="text-4xl font-serif font-bold mb-2">{data.fullName}</h1>
+                 <p className="text-stone-500 font-sans tracking-widest uppercase text-sm">{data.jobTitle}</p>
+                 <div className="w-16 h-1 bg-stone-800 mx-auto mt-4"></div>
+              </header>
+
+              <div className="grid grid-cols-2 gap-12">
+                 <div>
+                    {isVisible('experience') && (
+                       <section className="mb-8">
+                          <h2 className="font-serif font-bold text-xl mb-4 italic">Experience</h2>
+                          {data.experience.map((exp, i) => (
+                             <div key={i} className="mb-5">
+                                <h3 className="font-bold text-sm">{exp.role}</h3>
+                                <p className="text-xs text-stone-500 italic mb-1">{exp.company}, {exp.startDate}-{exp.endDate}</p>
+                                <p className="text-xs leading-relaxed">{exp.description[0]}</p>
+                             </div>
+                          ))}
+                       </section>
+                    )}
+                 </div>
+                 <div>
+                    {isVisible('summary') && (
+                       <section className="mb-8 text-center">
+                          <p className="font-serif italic text-sm leading-loose">"{data.summary}"</p>
+                       </section>
+                    )}
+                    {isVisible('skills') && (
+                       <section className="mb-8">
+                           <h2 className="font-serif font-bold text-xl mb-4 italic text-right">Skills</h2>
+                           <div className="text-right space-y-2">
+                              {data.skills.map((g, i) => (
+                                 <div key={i} className="text-xs">
+                                    <span className="font-bold">{g.category}:</span> {g.items.join(', ')}
+                                 </div>
+                              ))}
+                           </div>
+                       </section>
+                    )}
+                    <div className="text-center text-xs space-y-1 mt-8 pt-8 border-t border-stone-300">
+                       <div>{data.contact.email}</div>
+                       <div>{data.contact.phone}</div>
+                       <div>{data.contact.location}</div>
+                    </div>
+                 </div>
+              </div>
+              {renderCustomSections(data, visibleSections, isCustomVisible)}
+           </div>
+        </div>
+     )
+  }
+
+  // --- 6. Academic Template (Dense, Traditional) ---
+  if (template === 'academic') {
+     return (
+        <div className={`${containerClass} p-12 font-serif text-black`} id="resume-preview">
+           <header className="border-b border-black pb-4 mb-6">
+              <h1 className="text-2xl font-bold text-center mb-2">{data.fullName}</h1>
+              <div className="text-center text-sm">
+                 {data.contact.location} • {data.contact.phone} • {data.contact.email}
+              </div>
+           </header>
+           
+           {isVisible('education') && (
+              <section className="mb-4">
+                 <h2 className="text-sm font-bold uppercase border-b border-black mb-2">Education</h2>
+                 {data.education.map((edu, i) => (
+                    <div key={i} className="flex justify-between text-sm mb-1">
+                       <div><span className="font-bold">{edu.institution}</span>, {edu.degree}</div>
+                       <div>{edu.year}</div>
+                    </div>
+                 ))}
+              </section>
+           )}
+
+           {isVisible('experience') && (
+              <section className="mb-4">
+                 <h2 className="text-sm font-bold uppercase border-b border-black mb-2">Professional Experience</h2>
+                 {data.experience.map((exp, i) => (
+                    <div key={i} className="mb-3 text-sm">
+                       <div className="flex justify-between font-bold">
+                          <span>{exp.company}, {exp.role}</span>
+                          <span>{exp.startDate} – {exp.endDate}</span>
+                       </div>
+                       <ul className="list-disc ml-5 mt-1">
+                          {exp.description.map((d, idx) => <li key={idx} className="pl-1">{d}</li>)}
+                       </ul>
+                    </div>
+                 ))}
+              </section>
+           )}
+           
+           {isVisible('skills') && (
+              <section className="mb-4">
+                 <h2 className="text-sm font-bold uppercase border-b border-black mb-2">Skills</h2>
+                 <div className="text-sm">
+                    {data.skills.map((g, i) => (
+                       <div key={i}><span className="font-bold">{g.category}:</span> {g.items.join(', ')}</div>
+                    ))}
+                 </div>
+              </section>
+           )}
+           {renderCustomSections(data, visibleSections, isCustomVisible)}
+        </div>
+     )
+  }
+
+  // --- 7. Metro Template (Blocks, Windows Style) ---
+  if (template === 'metro') {
+     return (
+        <div className={`${containerClass} p-8 bg-slate-100`} id="resume-preview">
+           <header className="bg-blue-600 text-white p-6 mb-6 shadow-md">
+              <h1 className="text-4xl font-bold">{data.fullName}</h1>
+              <p className="text-blue-100">{data.jobTitle}</p>
+           </header>
+
+           <div className="flex gap-6">
+              <div className="w-1/3 space-y-6">
+                 <div className="bg-white p-4 shadow">
+                    <h2 className="bg-slate-800 text-white p-2 font-bold text-sm uppercase mb-3">Contact</h2>
+                    <div className="text-sm space-y-2">
+                       <div className="flex items-center gap-2"><Mail size={14} className="text-blue-600"/> {data.contact.email}</div>
+                       <div className="flex items-center gap-2"><Phone size={14} className="text-blue-600"/> {data.contact.phone}</div>
+                       <div className="flex items-center gap-2"><MapPin size={14} className="text-blue-600"/> {data.contact.location}</div>
+                    </div>
+                 </div>
+                 {isVisible('skills') && (
+                    <div className="bg-white p-4 shadow">
+                       <h2 className="bg-teal-600 text-white p-2 font-bold text-sm uppercase mb-3">Skills</h2>
+                       <div className="flex flex-wrap gap-1">
+                          {data.skills.flatMap(g => g.items).map((s, i) => (
+                             <span key={i} className="bg-slate-200 text-xs px-2 py-1">{s}</span>
+                          ))}
+                       </div>
+                    </div>
+                 )}
+              </div>
+              <div className="w-2/3 space-y-6">
+                 {isVisible('summary') && (
+                    <div className="bg-white p-4 shadow">
+                       <h2 className="bg-indigo-600 text-white p-2 font-bold text-sm uppercase mb-3">Profile</h2>
+                       <p className="text-sm">{data.summary}</p>
+                    </div>
+                 )}
+                 {isVisible('experience') && (
+                    <div className="bg-white p-4 shadow">
+                       <h2 className="bg-orange-600 text-white p-2 font-bold text-sm uppercase mb-3">Experience</h2>
+                       {data.experience.map((exp, i) => (
+                          <div key={i} className="mb-4 last:mb-0">
+                             <div className="font-bold text-slate-800">{exp.role}</div>
+                             <div className="text-xs text-orange-600 font-bold mb-1">{exp.company} | {exp.startDate}-{exp.endDate}</div>
+                             <p className="text-xs text-slate-600">{exp.description[0]}</p>
+                          </div>
+                       ))}
+                    </div>
+                 )}
+                 {renderCustomSections(data, visibleSections, isCustomVisible)}
+              </div>
+           </div>
+        </div>
+     )
+  }
+
+  // --- 8. Sky Template (Light Blue Theme) ---
+  if (template === 'sky') {
+     return (
+        <div className={`${containerClass} flex flex-col`} id="resume-preview">
+           <header className="bg-sky-100 p-8 text-center border-b border-sky-200">
+              <h1 className="text-3xl font-light text-sky-900 tracking-wider uppercase mb-2">{data.fullName}</h1>
+              <p className="text-sky-600 font-medium">{data.jobTitle}</p>
+              <div className="flex justify-center gap-4 mt-4 text-sm text-sky-800">
+                 <span>{data.contact.email}</span><span>|</span><span>{data.contact.location}</span>
+              </div>
+           </header>
+           <div className="flex-1 p-8 grid grid-cols-3 gap-8">
+              <div className="col-span-2 space-y-6">
+                 {isVisible('summary') && <section><h2 className="text-sky-600 font-bold uppercase tracking-widest text-sm mb-3">About</h2><p className="text-sm text-slate-700">{data.summary}</p></section>}
+                 {isVisible('experience') && <section><h2 className="text-sky-600 font-bold uppercase tracking-widest text-sm mb-3">Experience</h2>{data.experience.map((exp, i) => <div key={i} className="mb-4"><h3 className="font-bold text-slate-800">{exp.role}</h3><div className="text-xs text-sky-500 mb-1">{exp.company}, {exp.startDate}-{exp.endDate}</div><ul className="list-disc ml-4 text-sm text-slate-600">{exp.description.map((d, idx) => <li key={idx}>{d}</li>)}</ul></div>)}</section>}
+                 {renderCustomSections(data, visibleSections, isCustomVisible)}
+              </div>
+              <div className="col-span-1 bg-sky-50 p-4 rounded-xl h-fit">
+                 {isVisible('skills') && <section><h2 className="text-sky-600 font-bold uppercase tracking-widest text-sm mb-3">Skills</h2><div className="space-y-4">{data.skills.map((g, i) => <div key={i}><div className="text-xs font-bold mb-1 text-slate-700">{g.category}</div><div className="text-xs text-slate-600">{g.items.join(', ')}</div></div>)}</div></section>}
+              </div>
+           </div>
+        </div>
+     )
+  }
+
+  // --- 9. Verde Template (Green Sidebar) ---
+  if (template === 'verde') {
+     return (
+        <div className={`${containerClass} flex`} id="resume-preview">
+           <div className="w-1/4 bg-emerald-800 text-emerald-50 p-6 flex flex-col min-h-[297mm]">
+               <div className="mb-8">
+                  <h1 className="text-2xl font-bold mb-2 leading-tight">{data.fullName}</h1>
+                  <p className="text-emerald-300 text-sm">{data.jobTitle}</p>
+               </div>
+               <div className="text-xs space-y-2 mb-8 opacity-80">
+                  <div>{data.contact.email}</div>
+                  <div>{data.contact.phone}</div>
+               </div>
+               {isVisible('skills') && <div className="mt-auto"><h2 className="text-xs font-bold uppercase text-emerald-400 mb-2">Skills</h2><ul className="text-xs space-y-1">{data.skills.flatMap(g => g.items).slice(0, 10).map((s, i) => <li key={i}>{s}</li>)}</ul></div>}
+           </div>
+           <div className="w-3/4 p-8">
+              {isVisible('summary') && <div className="mb-6"><p className="text-sm italic text-slate-600 border-l-2 border-emerald-500 pl-4">{data.summary}</p></div>}
+              {isVisible('experience') && (
+                 <div>
+                    <h2 className="text-lg font-bold text-emerald-900 mb-4 flex items-center gap-2"><Briefcase size={16}/> Work Experience</h2>
+                    {data.experience.map((exp, i) => (
+                       <div key={i} className="mb-5 border-b border-slate-100 pb-4 last:border-0">
+                          <div className="flex justify-between items-baseline">
+                             <h3 className="font-bold text-slate-800">{exp.role}</h3>
+                             <span className="text-xs font-mono text-emerald-600">{exp.startDate} / {exp.endDate}</span>
+                          </div>
+                          <div className="text-sm font-medium text-slate-500 mb-2">{exp.company}</div>
+                          <p className="text-sm text-slate-600">{exp.description[0]}</p>
+                       </div>
+                    ))}
+                 </div>
+              )}
+              {renderCustomSections(data, visibleSections, isCustomVisible)}
+           </div>
+        </div>
+     )
+  }
+
+  // --- 10. Navy Template (Dark Blue Sidebar) ---
+  if (template === 'navy') {
+    return (
+      <div className={`${containerClass} flex flex-row-reverse`} id="resume-preview">
+         <div className="w-1/3 bg-slate-900 text-slate-300 p-8 min-h-[297mm]">
+            <div className="mb-8 text-right">
+               <h1 className="text-2xl font-bold text-white uppercase tracking-widest mb-1">{data.fullName.split(' ')[0]}</h1>
+               <h1 className="text-2xl font-light text-white uppercase tracking-widest mb-4">{data.fullName.split(' ').slice(1).join(' ')}</h1>
+               <p className="text-blue-400 text-sm">{data.jobTitle}</p>
+            </div>
+            
+            <div className="text-right text-xs space-y-3 mb-10">
+               <div>{data.contact.email}</div>
+               <div>{data.contact.phone}</div>
+               <div>{data.contact.location}</div>
+            </div>
+
+            {isVisible('education') && (
+               <div className="text-right mb-8">
+                  <h3 className="text-white font-bold uppercase text-xs mb-4 tracking-widest">Education</h3>
+                  {data.education.map((edu, i) => (
+                     <div key={i} className="mb-3">
+                        <div className="text-white font-bold text-sm">{edu.institution}</div>
+                        <div className="text-xs">{edu.degree}</div>
+                        <div className="text-[10px] text-slate-500">{edu.year}</div>
+                     </div>
+                  ))}
+               </div>
+            )}
+         </div>
+
+         <div className="w-2/3 p-10 pt-16">
+             {isVisible('summary') && <section className="mb-8"><h2 className="text-slate-900 font-bold uppercase tracking-widest text-sm mb-4">Profile</h2><p className="text-sm text-slate-600 leading-relaxed">{data.summary}</p></section>}
+             {isVisible('experience') && (
+                <section>
+                   <h2 className="text-slate-900 font-bold uppercase tracking-widest text-sm mb-6">Experience</h2>
+                   <div className="border-l border-slate-300 pl-6 space-y-8">
+                      {data.experience.map((exp, i) => (
+                         <div key={i} className="relative">
+                            <span className="absolute -left-[29px] top-1 w-3 h-3 bg-slate-900 rounded-full"></span>
+                            <h3 className="font-bold text-slate-800">{exp.role}</h3>
+                            <div className="text-xs font-bold text-slate-400 uppercase mb-2">{exp.company} | {exp.startDate} - {exp.endDate}</div>
+                            <ul className="list-disc ml-4 text-sm text-slate-600 space-y-1">
+                               {exp.description.map((d, idx) => <li key={idx}>{d}</li>)}
+                            </ul>
+                         </div>
+                      ))}
+                   </div>
+                </section>
+             )}
+             {renderCustomSections(data, visibleSections, isCustomVisible)}
+         </div>
+      </div>
+    )
+  }
 
   // --- Visual Template (Timeline & Graphics) ---
   if (template === 'visual') {
@@ -710,7 +1352,7 @@ export const ResumeTemplate: React.FC<ResumeTemplateProps> = ({ data, template, 
                 <div className="space-y-3">
                   {data.certifications.map((cert, idx) => (
                     <div key={idx} className="text-sm bg-slate-50 p-2 rounded border border-slate-100">
-                      <p className="font-semibold text-slate-800">{cert.name}</p>
+                      <p className="font-semibold text-slate-800">{cert.name}}</p>
                       <p className="text-slate-500 text-xs mt-0.5">{cert.issuer} • {cert.year}</p>
                     </div>
                   ))}
@@ -973,7 +1615,79 @@ export const ResumeTemplate: React.FC<ResumeTemplateProps> = ({ data, template, 
     );
   }
 
-  // Default Fallback (Minimalist - adjusted for font size consistency)
+  // --- Elegant Template (Serif, Centered, Clean) ---
+  if (template === 'elegant') {
+     return (
+        <div className={`${containerClass} p-10 font-serif`} id="resume-preview">
+           <div className="text-center border-b border-slate-300 pb-6 mb-8">
+              <h1 className="text-3xl font-bold text-slate-800 mb-1">{data.fullName}</h1>
+              <p className="italic text-slate-500 mb-4">{data.jobTitle}</p>
+              <div className="flex justify-center gap-4 text-xs text-slate-500 font-sans">
+                 <span>{data.contact.email}</span>
+                 <span>|</span>
+                 <span>{data.contact.phone}</span>
+                 <span>|</span>
+                 <span>{data.contact.location}</span>
+              </div>
+           </div>
+
+           <div className="grid grid-cols-1 gap-6">
+              {isVisible('summary') && (
+                 <section className="text-center px-10">
+                    <p className="text-sm italic text-slate-700 leading-relaxed">"{data.summary}"</p>
+                 </section>
+              )}
+
+              {isVisible('skills') && (
+                 <section className="text-center border-y border-slate-100 py-4 my-2">
+                    <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 font-sans">Core Competencies</h2>
+                    <div className="flex flex-wrap justify-center gap-3">
+                       {data.skills.flatMap(g => g.items).map((s, i) => (
+                          <span key={i} className="text-xs text-slate-700 uppercase">{s}</span>
+                       ))}
+                    </div>
+                 </section>
+              )}
+
+              {isVisible('experience') && (
+                 <section>
+                    <h2 className="text-center text-sm font-bold uppercase tracking-widest text-slate-400 mb-6 font-sans">Experience</h2>
+                    <div className="space-y-6">
+                       {data.experience.map((exp, i) => (
+                          <div key={i}>
+                             <div className="flex justify-between items-baseline mb-1">
+                                <h3 className="font-bold text-lg">{exp.role}</h3>
+                                <span className="text-sm italic text-slate-500">{exp.startDate} – {exp.endDate}</span>
+                             </div>
+                             <div className="text-sm font-medium mb-2">{exp.company}</div>
+                             <p className="text-sm text-slate-600 leading-relaxed">{exp.description[0]}</p>
+                          </div>
+                       ))}
+                    </div>
+                 </section>
+              )}
+
+               {isVisible('education') && (
+                 <section>
+                    <h2 className="text-center text-sm font-bold uppercase tracking-widest text-slate-400 mb-6 mt-4 font-sans">Education</h2>
+                    <div className="flex justify-center gap-10">
+                       {data.education.map((edu, i) => (
+                          <div key={i} className="text-center">
+                             <div className="font-bold">{edu.institution}</div>
+                             <div className="italic text-sm">{edu.degree}</div>
+                             <div className="text-xs text-slate-400">{edu.year}</div>
+                          </div>
+                       ))}
+                    </div>
+                 </section>
+              )}
+           </div>
+           {renderCustomSections(data, visibleSections, isCustomVisible)}
+        </div>
+     )
+  }
+
+  // --- Minimalist Template (Default fallback if nothing matches, but also explicit) ---
   return (
     <div className={`${containerClass} p-8 text-slate-800 text-sm`} id="resume-preview">
        <div className="flex justify-between items-start mb-8 border-b border-slate-100 pb-6">
@@ -990,43 +1704,16 @@ export const ResumeTemplate: React.FC<ResumeTemplateProps> = ({ data, template, 
       
       <div className="flex gap-8">
           <div className="w-2/3 space-y-6">
+             {isVisible('summary') && <section><h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">About</h3><p className="text-sm leading-relaxed">{data.summary}</p></section>}
              {isVisible('experience') && <section> <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Experience</h3> {data.experience.map((exp, idx) => <div key={idx} className="mb-4"><h4 className="font-medium text-base">{exp.role}</h4><p className="text-xs text-slate-400 mb-1">{exp.company} | {exp.startDate} - {exp.endDate}</p><ul className="text-xs text-slate-600 space-y-0.5">{exp.description.map((d, i) => <li key={i}>- {d}</li>)}</ul></div>)} </section>}
              {renderCustomSections(data, visibleSections, isCustomVisible)}
           </div>
           <div className="w-1/3 space-y-6">
               {isVisible('skills') && <section> <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Skills</h3> {data.skills.map((g, i) => <div key={i} className="mb-3"><p className="font-bold text-[10px]">{g.category}</p><p className="text-xs text-slate-500">{g.items.join(', ')}</p></div>)} </section>}
               {isVisible('education') && <section> <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Education</h3> {data.education.map((e, i) => <div key={i} className="mb-3"><p className="font-bold text-xs">{e.institution}</p><p className="text-[10px] text-slate-500">{e.degree}, {e.year}</p></div>)} </section>}
+              {isVisible('languages') && <section><h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-3">Languages</h3> {data.languages.map((l, i) => <div key={i} className="flex justify-between text-xs mb-1"><span>{l.language}</span><span className="text-slate-400">{l.proficiency}</span></div>)}</section>}
           </div>
       </div>
     </div>
   );
 };
-
-// Helper function for custom sections (to avoid code duplication)
-const renderCustomSections = (data: ResumeData, visibleSections: Record<string, boolean> | undefined, isCustomVisible: (s: CustomSection) => boolean) => {
-    if (!data.customSections) return null;
-    return data.customSections.map((section) => {
-       if (!isCustomVisible(section)) return null;
-       return (
-        <section key={section.id} className="mb-4">
-           <h2 className="text-lg font-bold uppercase tracking-wider mb-2 border-b border-slate-200 pb-1">{section.title}</h2>
-           <div className="space-y-4">
-              {section.items.map((item, idx) => (
-                 <div key={idx}>
-                    <div className="flex justify-between items-baseline mb-1">
-                       <span className="font-bold text-base text-slate-800">{item.title}</span>
-                       {item.date && <span className="text-xs italic text-slate-500">{item.date}</span>}
-                    </div>
-                    {item.subtitle && <div className="text-sm font-medium text-slate-600 mb-1">{item.subtitle}</div>}
-                    <ul className="list-disc ml-5 space-y-1">
-                       {item.description.map((desc, i) => (
-                          <li key={i} className="text-sm text-slate-700">{desc}</li>
-                       ))}
-                    </ul>
-                 </div>
-              ))}
-           </div>
-        </section>
-       );
-    });
-  };

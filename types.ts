@@ -69,7 +69,27 @@ export interface CustomSectionItem {
   description: string[];
 }
 
-export type TemplateType = 'modern' | 'classic' | 'minimalist' | 'executive' | 'swiss' | 'elegant' | 'compact' | 'visual' | 'global' | 'professional';
+export type TemplateType = 
+  | 'compact' 
+  | 'professional' 
+  | 'visual' 
+  | 'global' 
+  | 'modern' 
+  | 'classic' 
+  | 'minimalist' 
+  | 'executive' 
+  | 'swiss' 
+  | 'elegant'
+  | 'creative'
+  | 'tech'
+  | 'infographic'
+  | 'startup'
+  | 'artistic'
+  | 'academic'
+  | 'metro'
+  | 'sky'
+  | 'verde'
+  | 'navy';
 
 // Add html2pdf definition
 declare global {
